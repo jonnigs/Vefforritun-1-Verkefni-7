@@ -40,7 +40,8 @@ function start() {
  */
 function play() {
   // næsta lína kastar villu sem má sjá í "console" undir DevTools
-  var random = randomNumber(
+  var random = randomNumber(100)
+  var guess = prompt("Giskaðu á tölu milli 0 og1  100", "");
 }
 
 /**
