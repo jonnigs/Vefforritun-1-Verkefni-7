@@ -1,0 +1,10 @@
+* {
+  font-size: 20px;
+}
+
+h1 {
+  font-size: 24px;
+  background-color: #ddd;
+  color: #666;
+  padding: 2em;
+}
