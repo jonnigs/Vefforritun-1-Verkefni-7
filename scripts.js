@@ -21,7 +21,18 @@ var games = [];
  * Ef ýtt er á "cancel" er niðurstöðum leikja skilað með getResults() og alert()
  */
 function start() {
-  play();
+  var spila = true;
+  while (spila == true) {
+    play();
+    var aftur = confirm("Viltu spila annan leik?")
+    if (aftur == false) {
+      spila = false;
+    }
+  }
+  console.log(games);
+  var nidurstodur = getResults();
+  var loka_skilabod = alert(nidurstodur);
+
 }
 
 /**
@@ -40,7 +51,37 @@ function start() {
  */
 function play() {
   // næsta lína kastar villu sem má sjá í "console" undir DevTools
-  var random = randomNumber(
+  var txt;
+  var random = randomNumber(100);
+  var correct = false;
+  var gisk = 0;
+  var fjoldi = games.length;
+  while (correct==false) {
+    var guess = prompt("Giskaðu á tölu milli 0 og  100", "");
+    if (Math.abs(random-guess) == 0) {
+      txt = "Rétt giskað, vel gert!";
+      correct = true;
+      games[fjoldi] = gisk;
+      alert(txt);
+    } else if (Math.abs(random-guess) < 5) {
+      txt = "Mjög nálægt";
+      alert(txt);
+    } else if (Math.abs(random-guess) < 10) {
+      txt = "Nálægt";
+      alert(txt);
+    } else if (Math.abs(random-guess) < 20) {
+      txt = "Frekar langt frá";
+      alert(txt);
+    } else if (Math.abs(random-guess) < 50) {
+      txt = "Langt frá";
+      alert(txt);
+    } else {
+      txt = "Mjög langt frá";
+      alert(txt);
+    }
+    gisk = gisk + 1;
+    console.log(gisk);
+  }
 }
 
 /**
@@ -52,6 +93,15 @@ function play() {
  * Ef enginn leikur var spilaður er "Þú spilaðir engan leik" skilað.
  */
 function getResults() {
+  var skilabod;
+  if (games.length == 0) {
+    skilabod = "Þú spilaðir engan leik";
+    return skilabod;
+  } else {
+    var medaltal = calculateAverage();
+    var fjoldi_leikja = games.length;
+    return skilabod = "Þú spilaðir " + fjoldi_leikja + " leiki. \nMeðalfjöldi ágiskana var " + medaltal + ".";
+  }
 }
 
 /**
@@ -64,6 +114,11 @@ function getResults() {
  * Þarf að útfæra með lykkju.
  */
 function calculateAverage() {
+  var summa = 0;
+  for (i=0; i<games.length; i++ ){
+    summa = games[i] + summa;
+  }
+  return Math.round((summa/games.length)*100)/100;;
 }
 
 /**
@@ -71,6 +126,12 @@ function calculateAverage() {
  * Ef ekki er hægt að ná tölu úr input er null skilað.
  */
 function parseGuess(input) {
+  var str_to_num = Number(input);
+  if (str_to_num == NaN) {
+    return null;
+  } else {
+    return str_to_num;
+  }
 }
 
 /**
