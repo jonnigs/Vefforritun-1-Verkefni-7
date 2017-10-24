@@ -1,117 +1,66 @@
-
-/**
- * Verkefni 7 – Gisk leikur
- *
- * Útfæra leik sem snýst um að giska á tölu milli 0 og 100.
- */
-
-/**
- * global fylki sem geymir fjölda ágiskana í leikjum
- * Ef fylki er tómt hefur engin leikur verið spilaður.
- * Ef fylki er [2, 3] hafa verið spilaðir tveir leikir þar sem:
- *   - Fyrsti kláraðist í tveim ágiskunum
- *   - Seinni kláraðist í þrem ágiskunum
- */
+//Fylki sem heldur utanum fjölda leikja og giska í hverjum leik
 var games = [];
 
-/**
- * Byrjar leikinn okkar með því að kalla í play().
- * Eftir að að play() klárar, bíður notanda að spila annan leik með confirm()
- * Ef notandi ýtir á "ok" er annar leikur spilaður
- * Ef ýtt er á "cancel" er niðurstöðum leikja skilað með getResults() og alert()
- */
+/* Byrjar á því að spila leik. svo lengi sem notandi velur að spila annan leik,
+ * þá höldumst við í while lykkjunni. Ef notandi vill ekki spila annan leik, þá
+ * er strengurinn með niðurstöðum sóttur og birtur.*/
 function start() {
   var spila = true;
   while (spila == true) {
-    play();
-    var aftur = confirm("Viltu spila annan leik?")
-    if (aftur == false) {
-      spila = false;
+    var stopp = play(); // Sér um að stoppa alveg og birta ekki fleiri glugga
+    if (stopp == "stopp") { // ef að notandi ýtir á cancel á fyrsta glugga
+      return;
     }
+    spila = confirm("Viltu spila annan leik?");
   }
-  console.log(games);
-  var nidurstodur = getResults();
-  var loka_skilabod = alert(nidurstodur);
-
+  alert(getResults());
 }
 
 /**
- * Spilar einn leik. Sér um að:
- *   - Velja handahófskennda tölu í byrjun með randomNumber()
- *   - Biðja notanda um tölu með prompt()
- *   - Vinna úr inntaki frá notanda með parseGuess()
- *   - Láta vita hversu nálægt eða rétt gisk er með getResponse() og alert()
- *   - Halda utan um fjölda ágiskana
- *   - Vista fjölda ágiskana "games" fylki þegar búið að giska rétt
- *
- * Ef notandi ýtir á "cancel" þegar beðið er um ágiskun skal hætta í leik en
- * ekki vista ágiskanir (nota "break" í lykkju.)
- *
- * Þarf að útfæra með lykkju og flæðistýringum.
+ * Spilar einn leik.
  */
 function play() {
-  // næsta lína kastar villu sem má sjá í "console" undir DevTools
   var txt;
-  var random = randomNumber(100);
-  var correct = false;
+  var random = randomNumber(100); // Nær í tölu á bilinu [0,100]
+  console.log(random);
+  var correct = false; // Segir til um að við höfum ekki enn giskað rétt
   var gisk = 0;
   var fjoldi = games.length;
-  while (correct==false) {
+  while (correct == false) { // Á meðan við höfum ekki giskað rétt er haldið áfram
     var guess = prompt("Giskaðu á tölu milli 0 og  100", "");
-    if (Math.abs(random-guess) == 0) {
-      txt = "Rétt giskað, vel gert!";
-      correct = true;
-      games[fjoldi] = gisk;
-      alert(txt);
-    } else if (Math.abs(random-guess) < 5) {
-      txt = "Mjög nálægt";
-      alert(txt);
-    } else if (Math.abs(random-guess) < 10) {
-      txt = "Nálægt";
-      alert(txt);
-    } else if (Math.abs(random-guess) < 20) {
-      txt = "Frekar langt frá";
-      alert(txt);
-    } else if (Math.abs(random-guess) < 50) {
-      txt = "Langt frá";
-      alert(txt);
-    } else {
-      txt = "Mjög langt frá";
-      alert(txt);
+    if (guess == null) { // Ef ýtt er á CANCEL þá er allt stoppað
+      return "stopp";
+      break
+    }
+    var str_to_num = parseGuess(guess); // Tekur giskið og breytir í heiltölu
+    var mismunur = getResponse(str_to_num, random); // Nær í viðeigandi svar
+    alert(mismunur); // Birtir viðeigandi svar
+    if (mismunur == "Rétt!"){
+      correct = true; // Stoppar WHILE lykkjuna
     }
     gisk = gisk + 1;
-    console.log(gisk);
+    games[fjoldi] = gisk; // Setur fjölda giska í viðeigandi sæti í games fylkinu
   }
 }
 
 /**
- * Skilar niðurstöðum um spilaða leiki sem streng.
- * Fjölda leikja er skilað ásamt meðalfjölda giska, t.d.:
- *   "Þú spilaðir 10 leikir
- *    Meðalfjöldi ágiskana var 6"
- * Ath að meðalfjöldi kemur í nýrri línu.
- * Ef enginn leikur var spilaður er "Þú spilaðir engan leik" skilað.
+ * Skoðar fylkið games og skilar í streng fjöld leikja og meðalfjölda giska
  */
 function getResults() {
   var skilabod;
+  var medaltal = calculateAverage();
   if (games.length == 0) {
     skilabod = "Þú spilaðir engan leik";
     return skilabod;
+  } else if (games.length == 1) {
+    return skilabod = "Þú spilaðir " + games.length + " leik. \nMeðalfjöldi ágiskana var " + medaltal + ".";
   } else {
-    var medaltal = calculateAverage();
-    var fjoldi_leikja = games.length;
-    return skilabod = "Þú spilaðir " + fjoldi_leikja + " leiki. \nMeðalfjöldi ágiskana var " + medaltal + ".";
+    return skilabod = "Þú spilaðir " + games.length + " leiki. \nMeðalfjöldi ágiskana var " + medaltal + ".";
   }
 }
 
 /**
  * Reiknar út og skilar meðal ágiskunum í öllum leikjum sem geymdir eru í
- * global breytu "games". Skilar gildi með tveim aukastöfum.
- * Ef games = [3, 4, 4] er niðurstaðan
- * (3 + 4 + 4) / 3 = 3.666666667
- * og er henni skilað sem 3.67
- *
- * Þarf að útfæra með lykkju.
  */
 function calculateAverage() {
   var summa = 0;
@@ -126,7 +75,7 @@ function calculateAverage() {
  * Ef ekki er hægt að ná tölu úr input er null skilað.
  */
 function parseGuess(input) {
-  var str_to_num = Number(input);
+  var str_to_num = parseInt(input);
   if (str_to_num == NaN) {
     return null;
   } else {
@@ -135,22 +84,26 @@ function parseGuess(input) {
 }
 
 /**
- * Skilar svari sem birta á notanda sem streng, tekur inn tvær breytur
- *   - guess sem tölu, ágiskun notanda
- *   - correct sem tölu, rétt gildi
- * Ef guess er < 0 eða ekki tala skal skila strengnum "Ekki rétt"
- * Ef guess er nákvæmlega sama og correct skal skila strengnum "Rétt"
- * Ef munur er undir 5 (|correct - guess| < 5) skal skila "Mjög nálægt"
- * Ef munur er undir 10 skal skila "Nálægt"
- * Ef munur er undir 20 skal skila "Frekar langt frá"
- * Ef munur er undir 50 skal skila "Langt frá"
- * Annars skal skila "Mjög langt frá"
- *
- * Þarf að útfæra með flæðistýringu.
- * Math.abs skilar algildi tölu: |a| = Math.abs(a)
+ * Skilar svari sem birta á notanda sem streng
  */
 function getResponse(guess, correct) {
-  return 'Ekki rétt';
+  if (guess < 0 || guess > 100 || guess == null) {
+    return 'Ekki rétt';
+  }
+  var mismunur = Math.abs(correct-guess);
+    if (mismunur == 0) {
+      return "Rétt!";
+    } else if (mismunur < 5) {
+      return "Mjög nálægt";
+    } else if (mismunur < 10) {
+      return "Nálægt";
+    } else if (mismunur < 20) {
+      return "Frekar langt frá";
+    } else if (mismunur < 50) {
+      return "Langt frá";
+    } else {
+      return "Mjög langt frá";
+    }
 }
 
 /**
